@@ -40,7 +40,7 @@ void main() {
       await service.loadOrSeed();
 
       final fresh = LocalAchievementRepository(storage: storage);
-      expect(await fresh.load(), hasLength(4));
+      expect(await fresh.load(), hasLength(6));
     });
 
     test('corrupt payload hydrates to an empty rack and reseeds', () async {
@@ -50,7 +50,7 @@ void main() {
       service = AchievementService(repository: repository);
 
       final rack = await service.loadOrSeed();
-      expect(rack, hasLength(4));
+      expect(rack, hasLength(6));
     });
   });
 

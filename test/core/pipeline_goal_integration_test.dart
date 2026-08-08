@@ -62,14 +62,17 @@ void main() {
       title: title,
       now: monday,
     );
+    container.invalidate(goalsProvider);
+    container.invalidate(goalMissionPlanProvider);
     return (await container.read(goalsProvider.future))
         .firstWhere((goal) => goal.id == id);
   }
 
   Future<void> completeGoalMilestones(String goalId) async {
     for (var i = 0; i < GoalRules.milestonesPerGoal; i++) {
-      // Fresh catalog each round: the engine replans after a milestone, so
-      // the seed source (and the catalog built on it) changes.
+      // The seed source bridges the plan future synchronously, so each
+      // round must wait for the recomputed plan before reading the catalog.
+      await container.read(goalMissionPlanProvider.future);
       final catalog = container.read(missionCatalogProvider);
       final planned = await catalog.applySeeds(now: monday);
       final mission = planned.singleWhere(

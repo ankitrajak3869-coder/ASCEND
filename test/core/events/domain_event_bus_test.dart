@@ -29,12 +29,12 @@ void main() {
       ]);
     });
 
-    test('cancelled subscriptions stop receiving', () {
+    test('cancelled subscriptions stop receiving', () async {
       final bus = DomainEventBus();
       var received = 0;
       final sub = bus.events().listen((_) => received++);
 
-      sub.cancel();
+      await sub.cancel();
       bus.emit(BossDefeatedEvent(defeatedAt: DateTime(2026, 8, 4)));
 
       expect(received, 0);

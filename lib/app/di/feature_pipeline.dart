@@ -11,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// allowed to know about all relay providers at once.
 abstract final class FeaturePipeline {
   /// Keeps each feature's relay subscribed for the container's lifetime.
-  static void start(Ref ref) {
+  static void start(WidgetRef ref) {
     ref.watch(characterProgressionRelayProvider);
     ref.watch(bossMissionRelayProvider);
     ref.watch(bossGoalRelayProvider);
