@@ -1,0 +1,17 @@
+{
+  "@@locale": "hi",
+  "appTitle": "एसेन्ड",
+  "tagline": "आपका जीवन ही खेल है।",
+  "commonRetry": "फिर से",
+  "commonCancel": "रद्द करें",
+  "commonContinue": "आगे बढ़ें",
+  "commonLoading": "लोड हो रहा है",
+  "splashTagline": "आपका जीवन ही खेल है",
+  "splashStarting": "आपकी यात्रा तैयार हो रही है",
+  "bootErrorSummary": "Ascend शुरू नहीं हो सका",
+  "bootErrorBody": "शुरुआत में एक अप्रत्याशित त्रुटि हुई। आप दोबारा कोशिश कर सकते हैं।",
+  "designColors": "रंग",
+  "designTypography": "टाइपोग्राफ़ी",
+  "designSpacing": "स्पेसिंग",
+  "designRadii": "रेडियस"
+}

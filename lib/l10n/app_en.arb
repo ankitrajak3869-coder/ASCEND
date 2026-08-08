@@ -1,0 +1,21 @@
+{
+  "@@locale": "en",
+  "appTitle": "Ascend",
+  "tagline": "Your Life is the Game.",
+  "commonRetry": "Retry",
+  "commonCancel": "Cancel",
+  "commonContinue": "Continue",
+  "commonLoading": "Loading",
+  "splashTagline": "Your Life is the Game",
+  "splashStarting": "Preparing your journey",
+  "bootErrorSummary": "Could not start Ascend",
+  "bootErrorBody": "We hit an unexpected error while booting. You can retry.",
+  "designSystemTitle": "Design System",
+  "designSystemSubtitle": "Phase 1 verification surface for tokens, type and surfaces.",
+  "designColors": "Colors",
+  "designTypography": "Typography",
+  "designSpacing": "Spacing",
+  "designRadius": "Radius",
+  "designCardDemoTitle": "Quest Card",
+  "designCardDemoBody": "This card shows the default surface, radius and outline used across quest and stat cards."
+}
