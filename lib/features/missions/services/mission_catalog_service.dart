@@ -1,5 +1,6 @@
 import 'package:ascend/core/events/domain_events.dart';
 import 'package:ascend/core/models/mission_seed.dart';
+import 'package:ascend/core/models/stat_kind.dart';
 import 'package:ascend/core/utils/day_key.dart';
 import 'package:ascend/features/missions/domain/mission_domain.dart';
 import 'package:ascend/features/missions/models/mission_model.dart';
@@ -13,11 +14,15 @@ final class MissionTemplate {
     required this.title,
     required this.description,
     required this.xpReward,
+    this.statGains = const <StatGain>[],
   });
 
   final String title;
   final String description;
   final int xpReward;
+
+  /// Character stats this template grows on completion.
+  final List<StatGain> statGains;
 }
 
 /// Domain service: curates the day's missions and drives lifecycle changes.
@@ -46,26 +51,48 @@ final class MissionCatalogService {
       title: 'Strength training',
       description: 'Twenty minutes in the ring of iron.',
       xpReward: MissionRules.dailyXpReward,
+      statGains: <StatGain>[
+        StatGain(StatKind.health, 2),
+        StatGain(StatKind.strength, 3),
+        StatGain(StatKind.discipline, 1),
+      ],
     ),
     MissionTemplate(
       title: 'Deep reading',
       description: 'Ten pages of a good book.',
       xpReward: MissionRules.dailyXpReward,
+      statGains: <StatGain>[
+        StatGain(StatKind.knowledge, 2),
+        StatGain(StatKind.discipline, 1),
+      ],
     ),
     MissionTemplate(
       title: 'Hard connection',
       description: 'Call someone who matters.',
       xpReward: MissionRules.dailyXpReward,
+      statGains: <StatGain>[
+        StatGain(StatKind.confidence, 2),
+        StatGain(StatKind.creativity, 1),
+        StatGain(StatKind.discipline, 1),
+      ],
     ),
     MissionTemplate(
       title: 'Zero-sugar day',
       description: 'Skip the sweets from breakfast to bed.',
       xpReward: MissionRules.dailyXpReward,
+      statGains: <StatGain>[
+        StatGain(StatKind.finance, 3),
+        StatGain(StatKind.discipline, 1),
+      ],
     ),
     MissionTemplate(
       title: 'Finish the project task',
       description: 'One real step on the plan you chose.',
       xpReward: MissionRules.dailyXpReward,
+      statGains: <StatGain>[
+        StatGain(StatKind.knowledge, 3),
+        StatGain(StatKind.discipline, 1),
+      ],
     ),
   ];
 
@@ -99,6 +126,7 @@ final class MissionCatalogService {
         title: template.title,
         description: template.description,
         xpReward: template.xpReward,
+        statGains: template.statGains,
         createdAt: DateTime(today.year, today.month, today.day, 12),
       );
       await repository.save(mission);
@@ -163,6 +191,7 @@ final class MissionCatalogService {
         missionId: mission.id,
         missionTitle: mission.title,
         xpReward: mission.xpReward,
+        statGains: mission.statGains,
         isWeekly: mission.kind == MissionKind.weekly,
         completedAt: stamped,
         goalId: mission.goalId,

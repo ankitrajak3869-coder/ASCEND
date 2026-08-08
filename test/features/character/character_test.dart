@@ -8,29 +8,35 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('LevelCurve', () {
-    test('xp for level 1 is required to reach level 2', () {
-      final first = LevelCurve.xpForLevel(1);
-      expect(first, greaterThan(0));
-      expect(LevelCurve.levelAt(0), 1);
-      expect(LevelCurve.levelAt(first - 1), 1);
-      expect(LevelCurve.levelAt(first), 2);
+  group('LevelRules', () {
+    test('the live curve starts every adventurer at level 1', () {
+      final rules = LevelRules.live;
+      expect(rules.levelAt(0), 1);
+      expect(rules.levelAt(999), 1);
     });
 
-    test('level grows monotonically with XP', () {
-      var previous = 1;
-      for (var xp = 0; xp < 100000; xp += 137) {
-        final level = LevelCurve.levelAt(xp);
-        expect(level, greaterThanOrEqualTo(previous));
-        previous = level;
-      }
+    test('levels up exactly at each threshold', () {
+      final rules = LevelRules.live;
+      expect(rules.levelAt(1000), 2);
+      expect(rules.levelAt(2499), 2);
+      expect(rules.levelAt(2500), 3);
+      expect(rules.levelAt(4999), 3);
+      expect(rules.levelAt(5000), 4);
     });
 
-    test('later levels cost more than early ones', () {
-      expect(
-        LevelCurve.xpForLevel(5),
-        greaterThan(LevelCurve.xpForLevel(1)),
-      );
+    test('thresholds are configurable and monotonic by construction', () {
+      const rules = LevelRules(levelUpThresholds: <int>[100, 300]);
+      expect(rules.levelAt(50), 1);
+      expect(rules.levelAt(100), 2);
+      expect(rules.levelAt(300), 3);
+      expect(rules.levelAt(10_000), 3);
+    });
+
+    test('xpIntoLevel reports progress inside the current level', () {
+      final rules = LevelRules.live;
+      expect(rules.xpIntoLevel(500), 500);
+      expect(rules.xpIntoLevel(1000), 0);
+      expect(rules.xpIntoLevel(1300), 300);
     });
   });
 
@@ -84,7 +90,7 @@ void main() {
       final start = await harness.container.read(
         characterProfileProvider.future,
       );
-      final needed = LevelCurve.xpForLevel(start.level);
+      final needed = LevelRules.live.levelUpThresholds.first;
       final leveled = await harness.container
           .read(characterProfileProvider.notifier)
           .awardXp(needed);

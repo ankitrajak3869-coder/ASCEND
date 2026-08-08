@@ -4,6 +4,7 @@ import 'package:ascend/core/di/providers.dart';
 import 'package:ascend/core/events/domain_events.dart';
 import 'package:ascend/features/character/data/local_character_repository.dart';
 import 'package:ascend/features/character/domain/character_domain.dart';
+import 'package:ascend/features/character/models/character_history.dart';
 import 'package:ascend/features/character/models/character_profile.dart';
 import 'package:ascend/features/character/repositories/character_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,13 +35,47 @@ final class CharacterProfileNotifier
     return fresh;
   }
 
-  /// Awards [amount] XP and recomputes the level.
+  /// Grants the rewards of a completed mission: XP (+ recomputed level),
+  /// stat gains and a history record, persisted in one save.
+  ///
+  /// Deterministic and idempotent: replaying the same mission id is a no-op,
+  /// so no reward is ever granted twice even if the event is seen twice.
+  Future<CharacterProfile> applyMissionResult(
+    MissionCompletedEvent event,
+  ) async {
+    final current = state.value ?? await build();
+    if (current.history.contains(event.missionId)) {
+      return current;
+    }
+    final repository = ref.read(characterRepositoryProvider);
+    final totalXp = current.xp + event.xpReward;
+    final leveled = current.copyWith(
+      xp: totalXp,
+      level: LevelRules.live.levelAt(totalXp),
+      stats: current.stats.apply(event.statGains),
+      history: current.history.append(
+        CharacterHistoryRecord(
+          missionId: event.missionId,
+          missionTitle: event.missionTitle,
+          awardedAt: event.completedAt,
+          xp: event.xpReward,
+          statGains: event.statGains,
+        ),
+      ),
+    );
+    await repository.save(leveled);
+    state = AsyncData<CharacterProfile>(leveled);
+    return leveled;
+  }
+
+  /// Awards [amount] XP directly and recomputes the level (no history).
   Future<CharacterProfile> awardXp(int amount) async {
     final current = state.value ?? await build();
     final repository = ref.read(characterRepositoryProvider);
+    final totalXp = current.xp + amount;
     final leveled = current.copyWith(
-      xp: current.xp + amount,
-      level: LevelCurve.levelAt(current.xp + amount),
+      xp: totalXp,
+      level: LevelRules.live.levelAt(totalXp),
     );
     await repository.save(leveled);
     state = AsyncData<CharacterProfile>(leveled);
@@ -61,7 +96,7 @@ final class CharacterProfileNotifier
   }
 }
 
-/// Listens on the domain bus and awards XP whenever a mission completes.
+/// Listens on the domain bus and applies mission rewards to the character.
 ///
 /// This relay is the only place in the character feature allowed to consume
 /// events from other features. Watched by the app pipeline so it stays alive.
@@ -69,9 +104,11 @@ final characterProgressionRelayProvider =
     Provider<StreamSubscription<DomainEvent>>((ref) {
       final bus = ref.watch(domainEventBusProvider);
       final subscription = listenForGame(bus, (event) {
-        if (event case MissionCompletedEvent(:final xpReward)) {
+        if (event is MissionCompletedEvent) {
           unawaited(
-            ref.read(characterProfileProvider.notifier).awardXp(xpReward),
+            ref
+                .read(characterProfileProvider.notifier)
+                .applyMissionResult(event),
           );
         }
       });

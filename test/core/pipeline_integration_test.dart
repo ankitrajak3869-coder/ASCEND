@@ -70,7 +70,7 @@ void main() {
       expect(profile!.xp, MissionRules.dailyXpReward);
       expect(
         profile.level,
-        LevelCurve.levelAt(MissionRules.dailyXpReward),
+        LevelRules.live.levelAt(MissionRules.dailyXpReward),
       );
 
       final trophies = container.read(achievementsProvider).valueOrNull!;

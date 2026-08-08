@@ -7,6 +7,7 @@ library;
 
 import 'dart:async';
 
+import 'package:ascend/core/models/stat_kind.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
 
 /// Marker for application domain events.
@@ -22,6 +23,7 @@ final class MissionCompletedEvent extends DomainEvent {
     required this.xpReward,
     required this.isWeekly,
     required this.completedAt,
+    this.statGains = const <StatGain>[],
     this.goalId,
     this.milestoneIndex,
   });
@@ -31,6 +33,10 @@ final class MissionCompletedEvent extends DomainEvent {
   final int xpReward;
   final bool isWeekly;
   final DateTime completedAt;
+
+  /// Character stat contributions the player earned with this mission.
+  /// Packaged as the shared vocabulary so listeners need no mission imports.
+  final List<StatGain> statGains;
 
   /// Set when the mission was minted by the goal engine.
   final String? goalId;

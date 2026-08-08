@@ -1,3 +1,4 @@
+import 'package:ascend/core/models/stat_kind.dart';
 import 'package:ascend/features/missions/domain/mission_domain.dart';
 import 'package:flutter/foundation.dart';
 
@@ -11,6 +12,7 @@ final class MissionModel {
     required this.description,
     required this.xpReward,
     required this.createdAt,
+    this.statGains = const <StatGain>[],
     this.status = MissionStatus.open,
     this.completedAt,
     this.goalId,
@@ -32,7 +34,32 @@ final class MissionModel {
         : DateTime.fromMillisecondsSinceEpoch(json['completedAt'] as int),
     goalId: json['goalId'] as String?,
     milestoneIndex: json['milestoneIndex'] as int?,
+    statGains: _statGains(json['statGains']),
   );
+
+  static List<StatGain> _statGains(Object? raw) {
+    if (raw is! List) {
+      return const <StatGain>[];
+    }
+    final gains = <StatGain>[];
+    for (final entry in raw) {
+      if (entry is! Map) {
+        continue;
+      }
+      StatKind? kind;
+      for (final candidate in StatKind.values) {
+        if (candidate.name == entry['kind']) {
+          kind = candidate;
+          break;
+        }
+      }
+      final amount = entry['amount'];
+      if (kind != null && amount is int) {
+        gains.add(StatGain(kind, amount));
+      }
+    }
+    return gains;
+  }
 
   final String id;
   final MissionKind kind;
@@ -49,6 +76,9 @@ final class MissionModel {
   /// Index of the goal milestone this mission was minted for.
   final int? milestoneIndex;
 
+  /// Character stats this mission grows on completion.
+  final List<StatGain> statGains;
+
   bool get isDone => status == MissionStatus.completed;
 
   bool get isIncomplete => !isDone;
@@ -61,6 +91,7 @@ final class MissionModel {
     String? title,
     String? description,
     int? xpReward,
+    List<StatGain>? statGains,
     MissionStatus? status,
     DateTime? createdAt,
     DateTime? completedAt,
@@ -73,6 +104,7 @@ final class MissionModel {
       title: title ?? this.title,
       description: description ?? this.description,
       xpReward: xpReward ?? this.xpReward,
+      statGains: statGains ?? this.statGains,
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
       completedAt: completedAt ?? this.completedAt,
@@ -92,6 +124,10 @@ final class MissionModel {
     'completedAt': completedAt?.millisecondsSinceEpoch,
     'goalId': goalId,
     'milestoneIndex': milestoneIndex,
+    'statGains': <Object?>[
+      for (final gain in statGains)
+        <String, Object?>{'kind': gain.kind.name, 'amount': gain.amount},
+    ],
   };
 
   @override
