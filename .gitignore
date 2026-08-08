@@ -1,0 +1,118 @@
+# Dart/Flutter
+.dart_tool/
+build/
+*.dart_tool/
+.packages
+pubspec.lock
+
+# Flutter specific
+flutter_*.png
+*.flutter_build/
+.dart_tool/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Firebase
+firebase-debug.log
+firestore-debug.log
+firebase-debug.*.log
+
+# Firebase Emulator
+.firebase/
+firebase-emulator/
+
+# Generated files
+*.g.dart
+*.freezed.dart
+*.gr.dart
+*.config.dart
+*.mocks.dart
+
+# Build outputs
+android/app/build/
+android/.gradle/
+android/local.properties
+android/gradle.properties
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/.generated/
+
+# Web build
+build/web/
+
+# Coverage
+coverage/
+*.lcov
+
+# Secrets and keys (NEVER commit these)
+*.keystore
+*.jks
+*.p12
+*.pem
+*.key
+*.cert
+google-services.json
+GoogleService-Info.plist
+firebase_options.dart
+lib/firebase_options.dart
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.staging
+*.env
+
+# IDE specific
+*.iml
+*.ipr
+*.iws
+
+# Misc
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+# Testing
+test/*.dart.snapshot
+test_driver/*.dart.snapshot
+
+# Dart/Flutter packages
+.pub-cache/
+
+# Android signing
+android/key.properties
+android/app/upload-keystore.jks
+android/app/release-keystore.jks
+
+# iOS signing
+ios/*.p12
+ios/*.mobileprovision
+ios/Runner.xcworkspace/xcshareddata/xcschemes/Runner.xcscheme
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Flutter flavorizr
+flutter_flavorizr.yaml
+
+# Melos
+.melos/
+
+# Code generation
+*.part.dart
